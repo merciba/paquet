@@ -25,17 +25,59 @@ npm install --save paquet
 
 ## Gettting Started
 
+### ES6
+
 ``` JavaScript
 import Paquet from 'paquet'
 
-const paquet = new Paquet()
+const paquet = new Paquet({ generators: true })
 
 paquet.start({
 	port: 8080 																// optional, defaults to 3000
 	name: 'My new app',														// required
 	routes: {																// required
 		get: {
-			'/': function () { 												// routes can be functions or arrays of functions
+			'/': function * () { 												// routes can be functions or arrays of functions
+				this.response.sendFile(`${__dirname}/public/index.html`) 
+			},
+			'/error': function * () {
+				this.response.error(404, "uh oh! an error!")
+			}
+		}
+	},
+	middleware: [															// optional
+		someKoaMiddleware()
+	]
+})
+```
+
+That's it - all your declaraion upon instantiation. Of course, you're still able to do this: 
+
+``` JavaScript
+paquet.route({ 
+	get: {
+		'/new-route': function * () {
+			this.response.success("A new route for my new app")
+		}
+	}
+})
+```
+
+after the fact.
+
+### ES5
+
+``` JavaScript
+var Paquet = require('paquet')
+
+var paquet = new Paquet()
+
+paquet.start({
+	port: 8080 																// optional, defaults to 3000
+	name: 'My new app',														// required
+	routes: {																// required
+		get: {
+			'/': function () { 												// Syntax is identical, except the absence of generators
 				this.response.sendFile(`${__dirname}/public/index.html`) 
 			},
 			'/error': function () {
@@ -49,7 +91,7 @@ paquet.start({
 })
 ```
 
-That's it - all your declaraion upon instantiation. Of course, you're still able to do this: 
+And, you're still able to do this: 
 
 ``` JavaScript
 paquet.route({ 
@@ -61,7 +103,7 @@ paquet.route({
 })
 ```
 
-after the fact.
+after the fact, as well.
 
 This project is brand new, so there will inevitably be some bugs. Please file an issue with this repo and I'll get to it as soon as I can. 
 
