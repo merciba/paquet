@@ -25,7 +25,7 @@ npm install --save paquet
 
 ## Gettting Started
 
-```
+``` JavaScript
 import Paquet from 'paquet'
 
 const paquet = new Paquet()
