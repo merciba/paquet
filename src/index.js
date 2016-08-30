@@ -1,7 +1,6 @@
 import koa from './frameworks/koa'
 import express from './frameworks/express'
 import _ from 'lodash'
-const defaultFramework = 'koa'
 
 export class Paquet {
 
