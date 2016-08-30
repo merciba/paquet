@@ -16,15 +16,9 @@ generatorsAPI.start({
 	}
 })
 
-generatorsAPI.route({
-	get: {
-		'/generators-only': function * () { this.response.success("This is a generators-only route") }
-	}
-})
+var API = new Paquet()
 
-var normalAPI = new Paquet()
-
-normalAPI.start({
+API.start({
 	port: 3001,
 	name: 'Paquet API (without generators)',
 	routes: {
@@ -36,11 +30,5 @@ normalAPI.start({
 				this.response.error(404, "uh oh! an error!")
 			}
 		}
-	}
-})
-
-normalAPI.route({
-	get: {
-		'/normal': function * () { this.response.success("This is a normal, everyday route") }
 	}
 })
