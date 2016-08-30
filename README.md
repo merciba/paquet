@@ -78,7 +78,7 @@ paquet.start({
 	routes: {																// required
 		get: {
 			'/': function () { 												// Syntax is identical, except the absence of generators
-				this.response.sendFile(`${__dirname}/public/index.html`) 
+				this.response.sendFile(__dirname + '/public/index.html') 
 			},
 			'/error': function () {
 				this.response.error(404, "uh oh! an error!")
