@@ -4,7 +4,7 @@ A highly-modular REST API meta-framework
 
 ---
 
-Paquet is a REST API framework with a specific mission: To get a REST API set up as quickly and effortlessly as possible, with a full suite of production-ready features. Paquet was written so that you could use one line and a config object to spin up a REST API - written entirely in ES6.
+Paquet is a REST API framework with a specific mission: To get a REST API set up as quickly and effortlessly as possible, with a full suite of production-ready features. Paquet was written so that you could use one line and an object structure to spin up a REST API - written entirely in ES6.
 
 Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and Koa to give you two basic options - one with generator functions and one in vanilla ES5. 
 
@@ -106,5 +106,7 @@ paquet.route({
 after the fact, as well.
 
 This project is brand new, so there will inevitably be some bugs. Please file an issue with this repo and I'll get to it as soon as I can. 
+
+## Contributors
 
 - Alfonso
