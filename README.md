@@ -51,7 +51,7 @@ paquet.start({
 
 That's it - all your declaraion upon instantiation. Of course, you're still able to do this: 
 
-```
+``` JavaScript
 paquet.route({ 
 	get: {
 		'/new-route': function () {
