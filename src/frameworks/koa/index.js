@@ -19,7 +19,7 @@ import Promise from 'bluebird'
 if (process.env.NODE_ENV === 'development') {
 	try {
 	    fs.accessSync(process.cwd(), '.env');
-	    dotenv.config()
+	    dotenv.config({silent: true})
 	} catch (e) {}
 }
 

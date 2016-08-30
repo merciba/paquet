@@ -14,10 +14,8 @@ import logger from 'morgan'
 if (process.env.NODE_ENV === 'development') {
 	try {
 	    fs.accessSync(process.cwd(), '.env');
-	    dotenv.config()
-	} catch (e) {
-		console.log(e)
-	}
+	    dotenv.config({silent: true})
+	} catch (e) {}
 }
 
 const Express = function (options) {

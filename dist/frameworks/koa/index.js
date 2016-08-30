@@ -64,7 +64,7 @@ require('babel-polyfill');
 if (process.env.NODE_ENV === 'development') {
 	try {
 		_fs2.default.accessSync(process.cwd(), '.env');
-		_dotenv2.default.config();
+		_dotenv2.default.config({ silent: true });
 	} catch (e) {}
 }
 

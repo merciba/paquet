@@ -50,10 +50,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 if (process.env.NODE_ENV === 'development') {
 	try {
 		_fs2.default.accessSync(process.cwd(), '.env');
-		_dotenv2.default.config();
-	} catch (e) {
-		console.log(e);
-	}
+		_dotenv2.default.config({ silent: true });
+	} catch (e) {}
 }
 
 var Express = function Express(options) {
