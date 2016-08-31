@@ -10,7 +10,7 @@ Paquet is a REST API framework with a specific mission: To get a REST API set up
 
 Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and [Koa](http://koajs.com/) to give you two basic options - one with generator functions and one in vanilla ES5. 
 
-Paquet is not claiming to be something new, it simply makes what's out there more accessible and intuitive to get started with, by unifying their APIs. Instead of worrying about whether you've installed nad loaded all the correct middleware, Paquet ships with some basic features out of the box, such as: 
+Paquet is not claiming to be something new, it simply makes what's out there more accessible and intuitive to get started with, by unifying their APIs. Instead of worrying about whether you've installed and loaded all the correct middleware, Paquet ships with some basic features out of the box, such as: 
 
  * Body parsing
  * Cookie parsing
