@@ -113,7 +113,7 @@ paquet.start({
 				this.response.serveFile('./test/files/' + this.params.id) 
 			},
 			'/post/:id': [
-				function (next) {
+				function (req, res, next) {
 					return next												// You can also call next() or not call it at all, it's all good. 
 				},															// You can even return a promise :)
 				function () {
