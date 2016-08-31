@@ -87,13 +87,13 @@ paquet.start({
 	},
 	routes: {																// syntax is identical. except for the absence of generators
 		get: {
-			'/file/:id': function * () { 
+			'/file/:id': function () { 
 				this.response.serveFile('./test/files/' + this.params.id) 
 			},
-			'/post/:id': function * () {
+			'/post/:id': function () {
 				this.response.success({ title: "My post", author: "random guy" })
 			},
-			'/error': function * () {
+			'/error': function () {
 				this.response.error(404, "uh oh! an error!")
 			}
 		}
