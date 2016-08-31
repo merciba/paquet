@@ -2,7 +2,7 @@
 
 A highly-modular REST API meta-framework
 
----
+[![Build Status](https://travis-ci.org/merciba/paquet.svg?branch=master)](https://travis-ci.org/merciba/paquet) [![NPM](https://nodei.co/npm/paquet.png)](https://nodei.co/npm/paquet/) [![License](https://img.shields.io/npm/l/paquet.svg)](https://github.com/merciba/paquet/blob/master/LICENSE) [![Gratipay](http://img.shields.io/gratipay/merciba.svg)](https://gratipay.com/merciba/)
 
 Paquet is a REST API framework with a specific mission: To get a REST API set up as quickly and effortlessly as possible, with a full suite of production-ready features. Paquet was written so that you could use one line and an object structure to spin up a REST API - written entirely in ES6.
 
