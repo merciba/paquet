@@ -128,13 +128,17 @@ after the fact, as well.
 
 ## API
 
-`new Paquet(options)`
+### Constructor
+
+#### `new Paquet(options)`
 
 Creates a new instance of class `Paquet` with the following available options: 
 
  * `generators: Boolean`, optional. Defaults to `false`. When `true`, Paquet will only accept [generator funcitons](https://davidwalsh.name/es6-generators) as middleware and routes.
 
-`.start(options)`
+### Instance Methods
+
+#### `.start(options)`
 
 Starts a Paquet API with the following available options: 
 
@@ -172,6 +176,11 @@ Starts a Paquet API with the following available options:
  }
  ```
 
+#### .route(routes)
+
+Helper method - behaves identically to `options.routes`, allowing you to add new routes later on in your code.
+
+## Notes
 
 This project is brand new, so there will inevitably be some bugs. Please file an issue with this repo and I'll get to it as soon as I can. 
 
