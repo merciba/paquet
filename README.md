@@ -132,16 +132,16 @@ after the fact, as well.
 
 Creates a new instance of class `Paquet` with the following available options: 
 
- * `generators`: Boolean, optional. Defaults to false
+ * `generators: Boolean`, optional. Defaults to false
 
 `.start(options)`
 
 Starts a Paquet API with the following available options: 
 
- * `name`: String, required
- * `port`: Number, optional. Defaults to 3000
- * `public`: String, optional. Sets a folder as a static file server
- * `middleware`: Object, optional. Inserts middleware before the routes
+ * `name: String`, required
+ * `port: Number`, optional. Defaults to 3000
+ * `public: String`, optional. Sets a folder as a static file server
+ * `middleware: Object`, optional. Inserts middleware before the routes
 
 `options.middleware` object has the following structure: 
 
@@ -158,7 +158,7 @@ Starts a Paquet API with the following available options:
 
  When a single Function is passed, the function will be injected into the stack.  
 
- * `routes`: Object, required. Sets the routes for your app
+ * `routes: Object`, required. Sets the routes for your app
 
 `options.routes` object has the following structure: 
 
