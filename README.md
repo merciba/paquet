@@ -206,6 +206,11 @@ Helper method - behaves identically to `options.routes`, allowing you to add new
 
 This project is brand new, so there will inevitably be some bugs. Please file an issue with this repo and I'll get to it as soon as I can. 
 
+Coming soon: 
+
+ * Plugins
+ * ES7 async/await support via Koa 2
+
 ## Contributors
 
 - [Alfonso Gober](https://www.linkedin.com/in/alfonsogober)
