@@ -1,0 +1,10 @@
+{
+	"port": 9091,
+	"name": "Paquet",
+	"public": "./public",
+	"middleware": "./middleware.js",
+	"routes": {
+		"get": "./controllers/get.js",
+		"post": "./controllers/post.js"
+	}
+}
