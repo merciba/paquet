@@ -12,16 +12,9 @@ Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and
 
 ## Table of Contents
 
-[Install](#install)  
-  [CLI](#cli)  
-  [Module](#module)  
-[Examples](#examples)  
-  [Using the CLI](#using-the-cli)  
-  [ES6](#es6)  
-  [ES5](#es5)  
+[Install](#install)   
+[Examples](#examples)   
 [API](#api)  
-  [Constructor](#constructor)  
-  [Instance Methods](#instance-methods)  
 [Notes](#notes)  
 [Contributors](#contributors)  
 
