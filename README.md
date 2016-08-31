@@ -12,15 +12,18 @@ Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and
 
 ## Table of Contents
 
- * [Install](#install)
- * [Examples](#examples)
+[Install](#install)  
+  * [CLI](#cli)
+  * [Module](#module)  
+[Examples](#examples)  
+  * [Using the CLI](#using-the-cli)
   * [ES6](#es6)
-  * [ES5](#es5)
- * [API](#api)
+  * [ES5](#es5)  
+[API](#api)  
   * [Constructor](#constructor)
-  * [Instance Methods](#instance-methods)
- * [Notes](#notes)
- * [Contributors](#contributors)
+  * [Instance Methods](#instance-methods)  
+[Notes](#notes)  
+[Contributors](#contributors)  
 
 ### Okay, so who is this for? Why wouldn't I just use Express or Koa?
 
@@ -44,11 +47,29 @@ When you create an API using `var paquet = new Paquet(mode).start(options)`, the
 
 ## Install
 
+### CLI
+
 ```
-npm install --save paquet
+npm install paquet -g
+```
+
+### Module
+
+```
+npm install paquet --save
 ```
 
 ## Examples
+
+### Using the CLI
+
+```
+paquet --public ./public --middleware ./middleware.js
+```
+
+This would start an API called `helloworld` on port 9090 and point the static file server at ./public (relative to your project's root) and load middleware from the file `middleware.js` in your project's root. 
+
+To specify `routes`, use a `paquet.json` in your project's root. Here's an [example paquet.json](https://gist.github.com/merciba/f72f7dd0f910e7eb46a21eaf8fed9f32).
 
 ### ES6
 
@@ -59,7 +80,7 @@ const paquet = new Paquet('es6')
 
 paquet.start({
 	port: 9090,																// optional, defaults to 3000
-	name: 'helloworld',														// required
+	name: 'helloworld',														// optional
 	public: './test/public',												// optional
 	middleware: {															// optional
 		'/docs': './test/docs'

@@ -1,7 +1,7 @@
 {
   "name": "paquet",
-  "version": "1.1.0",
-  "description": "A highly-modular REST API meta-framework",
+  "version": "1.2.0",
+  "description": "A practical REST API framework",
   "main": "./bin/paquet.js",
   "bin": "./bin/paquet.js",
   "scripts": {
@@ -10,6 +10,21 @@
   },
   "author": "Merciba <team@merciba.com>",
   "license": "MIT",
+  "keywords": [
+    "REST",
+    "API",
+    "merciba", 
+    "framework",
+    "paquet", 
+    "node",
+    "es6",
+    "es5",
+    "koa", 
+    "express", 
+    "babel",
+    "javascript",
+    "cli"
+  ],
   "dependencies": {
     "bluebird": "^3.4.3",
     "body-parser": "^1.15.2",

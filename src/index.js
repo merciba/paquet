@@ -12,6 +12,7 @@ export class Paquet {
 
 	start(options) {
 		if (options) {
+			if (!options.name) options.name = 'paquet'
 			if (!options.port) options.port = 3000
 
 			if (this.mode === 'es6') this.instance = koa(options)
