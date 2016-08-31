@@ -8,7 +8,7 @@ import _ from 'lodash'
 import dotenv from 'dotenv'
 import koa from 'koa'
 import logger from 'koa-logger'
-import serve from 'koa-static'
+import views from 'co-views'
 import parse from 'koa-body'
 import params from 'koa-strong-params'
 import userAgent from 'koa-useragent'
@@ -23,8 +23,21 @@ if (process.env.NODE_ENV === 'development') {
 	} catch (e) {}
 }
 
+function serve(dir) {
+	dir = dir.replace('./', `${process.cwd()}/`);
+	return function * () {
+		if (this.path[this.path.length - 1] === '/') this.response.serveFile(path.join(dir, 'index.html'))
+		else this.response.serveFile(path.join(dir, this.path))
+	}
+}
+
 const Koa = function (options) {
 	const instance = {};
+	const render = views(options.views || process.cwd(), { 
+		map: {
+			html: 'swig'
+		}
+	})
 
 	instance.app = koa()
 	instance.router = require('koa-router')()
@@ -37,33 +50,46 @@ const Koa = function (options) {
 		.use(params())
 		.use(userAgent())
 		.use(function * (next) {
-			this.response.sendFile = (path) => {
-				this.response.body = fs.readFileSync(path, {'encoding': 'utf8'})
-			}
+			this.response.render = render
 			this.response.success = (result) => {
-				if (!result) result = { message: `${options.name} is up and running :)` }
 				this.response.status = 200
-				this.response.body = { status: 200, data: result }
+				if (!result) result = { message: `${options.name} is up and running :)` }
+				if (typeof result === 'string') this.response.body = result
+				else this.response.body = { status: 200, data: result }
 			}
 			this.response.error = (statusCode, err) => {
 				const code = statusCode || 500
 				this.response.status = code
 				this.response.body = { status: code, data: err }
 			}
+			this.response.serveFile = (path) => {
+				try {
+					this.response.body = fs.readFileSync(path, {'encoding': 'utf8'})
+				}
+				catch (e) {
+					this.response.error(404, "Not Found")
+				}
+			}
 			yield next
 		})
 
-	if (options.middleware) _.map(options.middleware, (middleware) => instance.app.use(function * (next) { 
-		let m = yield middleware(this.request, this.response, next, instance)
-		
-		if (typeof m === 'function') yield m()
-		else response.locals = m
-		
-		yield next 
-	}))
+	if (options.middleware) _.map(options.middleware, (middleware, path) => {
+		if (path && (typeof middleware === 'string')) instance.app.use(mount(path, serve(middleware)))
+		else if (path) instance.app.use(mount(path, middleWareWrapper))
+		else instance.app.use(middleWareWrapper)
 
-	if (options.docs) instance.app.use(mount('/docs', serve(options.docs)))
+		function * middleWareWrapper(next) {
+			let m = yield middleware(next).bind(this)
+			
+			if (typeof m === 'function') yield m()
+			else response.locals = m
+			
+			yield next 
+		}
+	})
+
 	instance.app.use(instance.router.routes())
+	if (options.public) instance.app.use(serve(options.public))
 
 	if (options.errorHandler) instance.app.on('error', options.errorHandler)
 	if (options.routes) _.map(options.routes, (route, method) => { 

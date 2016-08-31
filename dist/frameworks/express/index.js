@@ -73,22 +73,32 @@ var Express = function Express(options) {
 			var code = statusCode || 500;
 			response.status(code).json({ status: code, data: err });
 		};
+		response.serveFile = function (file) {
+			try {
+				response.sendFile(file, { root: process.cwd() });
+			} catch (e) {
+				response.error(404, "Not Found");
+			}
+		};
 		next();
 	});
 
-	if (options.middleware) _lodash2.default.map(options.middleware, function (middleware) {
-		return instance.app.use(function (request, response, next) {
+	if (options.middleware) _lodash2.default.map(options.middleware, function (middleware, path) {
+		if (path && typeof middleware === 'string') instance.app.use(path, _express2.default.static(middleware));else if (path && typeof middleware === 'function') instance.app.use(path, middleWareWrapper);else if (middleware[0]) instance.app.use.apply(instance.app, middleWareWrapper);else instance.app.use(middleWareWrapper);
+
+		function middleWareWrapper(request, response, next) {
 			instance.request = request;
 			instance.response = response;
+			instance.params = request.params;
 
-			var m = middleware.apply(instance, [req, res, next]);
+			var m = middleware.apply(instance, [request, response, next]);
 
 			if (m.then && typeof m.then === 'function') m.then(function (res) {
 				return response.locals = res;
 			});else if (typeof m === 'function') m();else response.locals = m;
 
 			next();
-		});
+		}
 	});
 
 	if (options.public) instance.app.use(_express2.default.static(options.public));
@@ -99,6 +109,7 @@ var Express = function Express(options) {
 			instance.app[method].apply(instance.app, [url].concat(controllers.map(function (controller) {
 				return function (req, res, next) {
 					instance.request = req;
+					instance.params = req.params;
 					instance.response = res;
 					controller.apply(instance, [req, res, next]);
 				};

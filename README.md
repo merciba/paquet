@@ -10,10 +10,10 @@ Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and
 
 Paquet is not claiming to be something new, it simply makes what's out there more accessible and intuitive to get started with, by unifying their APIs. Instead of worrying about whether you've installed nad loaded all the correct middleware, Paquet ships with some basic features out of the box, such as: 
 
-	* Body parsing
-	* Cookie parsing
-	* URL Querystring parsing
-	* Serving static files
+ * Body parsing
+ * Cookie parsing
+ * URL Querystring parsing
+ * Serving static files
 
 Plus, you can still load the Express/Koa middleware you know and love!
 
@@ -33,21 +33,25 @@ import Paquet from 'paquet'
 const paquet = new Paquet({ generators: true })
 
 paquet.start({
-	port: 8080 																// optional, defaults to 3000
-	name: 'My new app',														// required
+	port: 9090,																// optional, defaults to 3000
+	name: 'helloworld',														// required
+	public: './test/public',												// optional
+	middleware: {															// optional
+		'/docs': './test/docs'
+	},
 	routes: {																// required
 		get: {
-			'/': function * () { 												// routes can be functions or arrays of functions
-				this.response.sendFile(`${__dirname}/public/index.html`) 
+			'/file/:id': function * () { 
+				this.response.serveFile(`./test/files/${this.params.id}`) 
+			},
+			'/post/:id': function * () {
+				this.response.success({ title: "My post", author: "random guy" })
 			},
 			'/error': function * () {
 				this.response.error(404, "uh oh! an error!")
 			}
 		}
-	},
-	middleware: [															// optional
-		someKoaMiddleware()
-	]
+	}
 })
 ```
 
@@ -73,21 +77,25 @@ var Paquet = require('paquet')
 var paquet = new Paquet()
 
 paquet.start({
-	port: 8080 																// optional, defaults to 3000
-	name: 'My new app',														// required
-	routes: {																// required
+	port: 9090,																
+	name: 'helloworld',														
+	public: './test/public',												
+	middleware: {															
+		'/docs': './test/docs'
+	},
+	routes: {																// syntax is identical. except for the absence of generators
 		get: {
-			'/': function () { 												// Syntax is identical, except the absence of generators
-				this.response.sendFile(__dirname + '/public/index.html') 
+			'/file/:id': function * () { 
+				this.response.serveFile('./test/files/' + this.params.id) 
 			},
-			'/error': function () {
+			'/post/:id': function * () {
+				this.response.success({ title: "My post", author: "random guy" })
+			},
+			'/error': function * () {
 				this.response.error(404, "uh oh! an error!")
 			}
 		}
-	},
-	middleware: [															// optional
-		someExpressMiddleware()
-	]
+	}
 })
 ```
 
@@ -105,8 +113,60 @@ paquet.route({
 
 after the fact, as well.
 
+## API
+
+`new Paquet(options)`
+
+Creates a new instance of class `Paquet` with the following available options: 
+
+ * `generators`: Boolean, optional. Defaults to false
+
+`.start(options)`
+
+Starts a Paquet API with the following available options: 
+
+ * `name`: String, required
+ * `port`: Number, optional. Defaults to 3000
+ * `public`: String, optional. Sets a folder as a static file server
+ * `middleware`: Object, optional. Inserts middleware before the routes
+
+`options.middleware` object has the following structure: 
+
+ ```
+ {
+ 	'/:path': String || Array || Function,
+
+ 	...
+ }
+ ```
+
+ When a String is passed, if it is a valid path, this path will also be set as a static file server, accessible at `/:path`.  
+
+ When an Array of functions is passed, these will be injected as cascading middleware into the stack.  
+
+ When a single Function is passed, the function will be injected into the stack.  
+
+ * `routes`: Object, required. Sets the routes for your app
+
+`options.routes` object has the following structure: 
+
+ ```
+ {
+ 	'(get|post|put|patch|delete)': {
+ 		
+ 		'/:path': Array || Function,
+ 		
+ 		...
+
+ 	},
+
+ 	...
+ }
+ ```
+
+
 This project is brand new, so there will inevitably be some bugs. Please file an issue with this repo and I'll get to it as soon as I can. 
 
 ## Contributors
 
-- Alfonso
+- Alfonso Gober <alfonso@merciba.com>

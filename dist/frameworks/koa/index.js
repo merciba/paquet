@@ -29,9 +29,9 @@ var _koaLogger = require('koa-logger');
 
 var _koaLogger2 = _interopRequireDefault(_koaLogger);
 
-var _koaStatic = require('koa-static');
+var _coViews = require('co-views');
 
-var _koaStatic2 = _interopRequireDefault(_koaStatic);
+var _coViews2 = _interopRequireDefault(_coViews);
 
 var _koaBody = require('koa-body');
 
@@ -68,88 +68,120 @@ if (process.env.NODE_ENV === 'development') {
 	} catch (e) {}
 }
 
+function serve(dir) {
+	dir = dir.replace('./', process.cwd() + '/');
+	return regeneratorRuntime.mark(function _callee() {
+		return regeneratorRuntime.wrap(function _callee$(_context) {
+			while (1) {
+				switch (_context.prev = _context.next) {
+					case 0:
+						if (this.path[this.path.length - 1] === '/') this.response.serveFile(_path2.default.join(dir, 'index.html'));else this.response.serveFile(_path2.default.join(dir, this.path));
+
+					case 1:
+					case 'end':
+						return _context.stop();
+				}
+			}
+		}, _callee, this);
+	});
+}
+
 var Koa = function Koa(options) {
 	var instance = {};
+	var render = (0, _coViews2.default)(options.views || process.cwd(), {
+		map: {
+			html: 'swig'
+		}
+	});
 
 	instance.app = (0, _koa2.default)();
 	instance.router = require('koa-router')();
 
 	(0, _koaQs2.default)(instance.app);
 
-	instance.app.use((0, _koaLogger2.default)()).use((0, _koaBody2.default)()).use((0, _koaStrongParams2.default)()).use((0, _koaUseragent2.default)()).use(regeneratorRuntime.mark(function _callee(next) {
+	instance.app.use((0, _koaLogger2.default)()).use((0, _koaBody2.default)()).use((0, _koaStrongParams2.default)()).use((0, _koaUseragent2.default)()).use(regeneratorRuntime.mark(function _callee2(next) {
 		var _this = this;
 
-		return regeneratorRuntime.wrap(function _callee$(_context) {
+		return regeneratorRuntime.wrap(function _callee2$(_context2) {
 			while (1) {
-				switch (_context.prev = _context.next) {
+				switch (_context2.prev = _context2.next) {
 					case 0:
-						this.response.sendFile = function (path) {
-							_this.response.body = _fs2.default.readFileSync(path, { 'encoding': 'utf8' });
-						};
+						this.response.render = render;
 						this.response.success = function (result) {
-							if (!result) result = { message: options.name + ' is up and running :)' };
 							_this.response.status = 200;
-							_this.response.body = { status: 200, data: result };
+							if (!result) result = { message: options.name + ' is up and running :)' };
+							if (typeof result === 'string') _this.response.body = result;else _this.response.body = { status: 200, data: result };
 						};
 						this.response.error = function (statusCode, err) {
 							var code = statusCode || 500;
 							_this.response.status = code;
 							_this.response.body = { status: code, data: err };
 						};
-						_context.next = 5;
+						this.response.serveFile = function (path) {
+							try {
+								_this.response.body = _fs2.default.readFileSync(path, { 'encoding': 'utf8' });
+							} catch (e) {
+								_this.response.error(404, "Not Found");
+							}
+						};
+						_context2.next = 6;
 						return next;
 
-					case 5:
+					case 6:
 					case 'end':
-						return _context.stop();
+						return _context2.stop();
 				}
 			}
-		}, _callee, this);
+		}, _callee2, this);
 	}));
 
-	if (options.middleware) _lodash2.default.map(options.middleware, function (middleware) {
-		return instance.app.use(regeneratorRuntime.mark(function _callee2(next) {
+	if (options.middleware) _lodash2.default.map(options.middleware, function (middleware, path) {
+		var _marked = [middleWareWrapper].map(regeneratorRuntime.mark);
+
+		if (path && typeof middleware === 'string') instance.app.use((0, _koaMount2.default)(path, serve(middleware)));else if (path) instance.app.use((0, _koaMount2.default)(path, middleWareWrapper));else instance.app.use(middleWareWrapper);
+
+		function middleWareWrapper(next) {
 			var m;
-			return regeneratorRuntime.wrap(function _callee2$(_context2) {
+			return regeneratorRuntime.wrap(function middleWareWrapper$(_context3) {
 				while (1) {
-					switch (_context2.prev = _context2.next) {
+					switch (_context3.prev = _context3.next) {
 						case 0:
-							_context2.next = 2;
-							return middleware(this.request, this.response, next, instance);
+							_context3.next = 2;
+							return middleware(next).bind(this);
 
 						case 2:
-							m = _context2.sent;
+							m = _context3.sent;
 
 							if (!(typeof m === 'function')) {
-								_context2.next = 8;
+								_context3.next = 8;
 								break;
 							}
 
-							_context2.next = 6;
+							_context3.next = 6;
 							return m();
 
 						case 6:
-							_context2.next = 9;
+							_context3.next = 9;
 							break;
 
 						case 8:
 							response.locals = m;
 
 						case 9:
-							_context2.next = 11;
+							_context3.next = 11;
 							return next;
 
 						case 11:
 						case 'end':
-							return _context2.stop();
+							return _context3.stop();
 					}
 				}
-			}, _callee2, this);
-		}));
+			}, _marked[0], this);
+		}
 	});
 
-	if (options.docs) instance.app.use((0, _koaMount2.default)('/docs', (0, _koaStatic2.default)(options.docs)));
 	instance.app.use(instance.router.routes());
+	if (options.public) instance.app.use(serve(options.public));
 
 	if (options.errorHandler) instance.app.on('error', options.errorHandler);
 	if (options.routes) _lodash2.default.map(options.routes, function (route, method) {
