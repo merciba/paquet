@@ -8,12 +8,12 @@ const request = require('request-promise')
 
 require('mocha-generators').install()
 
-var generatorsAPI = new Paquet({ generators: true })
-var API = new Paquet()
+var es6 = new Paquet('es6')
+var es5 = new Paquet()
 
-generatorsAPI.start({
+es6.start({
 	port: 9090,
-	name: 'Paquet API (with generators)',
+	name: 'Paquet API (ES6 mode)',
 	public: `./test/public`,
 	middleware: {
 		'/docs': `./test/docs`
@@ -39,9 +39,9 @@ generatorsAPI.start({
 	}
 })
 
-API.start({
+es5.start({
 	port: 9091,
-	name: 'Paquet API (without generators)',
+	name: 'Paquet API (ES5 mode)',
 	public: `./test/public`,
 	middleware: {
 		'/docs': `./test/docs`

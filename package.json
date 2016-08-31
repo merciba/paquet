@@ -1,6 +1,6 @@
 {
   "name": "paquet",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A highly-modular REST API meta-framework",
   "main": "./bin/paquet.js",
   "bin": "./bin/paquet.js",

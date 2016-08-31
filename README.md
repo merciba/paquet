@@ -8,7 +8,7 @@ A practical REST API framework
 
 Paquet is a REST API framework with a specific mission: To get a REST API set up as quickly and effortlessly as possible, with a full suite of production-ready features. Paquet was written so that you could use one line and an object structure to spin up a REST API - written entirely in ES6.
 
-Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and [Koa](http://koajs.com/) to give you two basic options - one with [generator functions](https://davidwalsh.name/es6-generators) and one in vanilla ES5. 
+Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and [Koa](http://koajs.com/) to give you two basic options - ES6 with [generator functions](https://davidwalsh.name/es6-generators) and ES5. 
 
 ## Table of Contents
 
@@ -40,7 +40,7 @@ Paquet is not claiming to be something new, it simply makes what's out there mor
 
 Plus, you can still load the Express/Koa middleware you know and love!
 
-When you create an API using `var paquet = new Paquet(options).start(options)`, the underlyng Koa/Express app will always be accessible as `paquet.instance.app`.
+When you create an API using `var paquet = new Paquet(mode).start(options)`, the underlyng Koa/Express app will always be accessible as `paquet.instance.app`.
 
 ## Install
 
@@ -55,7 +55,7 @@ npm install --save paquet
 ``` JavaScript
 import Paquet from 'paquet'
 
-const paquet = new Paquet({ generators: true })
+const paquet = new Paquet('es6')
 
 paquet.start({
 	port: 9090,																// optional, defaults to 3000
@@ -164,11 +164,11 @@ after the fact, as well.
 
 ### Constructor
 
-#### `new Paquet(options)`
+#### `new Paquet(mode)`
+ 
+Creates a new instance of class `Paquet`.  
 
-Creates a new instance of class `Paquet` with the following available options: 
-
- * `generators: Boolean`, optional. Defaults to `false`. When `true`, Paquet will only accept [generator functions](https://davidwalsh.name/es6-generators) as middleware and routes.
+`mode` Defaults to `es5`. When `es6`, Paquet will only accept [generator functions](https://davidwalsh.name/es6-generators) as middleware and routes.
 
 ### Instance Methods
 
