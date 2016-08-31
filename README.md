@@ -8,7 +8,7 @@ A practical REST API framework
 
 Paquet is a REST API framework with a specific mission: To get a REST API set up as quickly and effortlessly as possible, with a full suite of production-ready features. Paquet was written so that you could use one line and an object structure to spin up a REST API - written entirely in ES6.
 
-Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and [Koa](http://koajs.com/) to give you two basic options - one with generator functions and one in vanilla ES5. 
+Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and [Koa](http://koajs.com/) to give you two basic options - one with [generator funcitons](https://davidwalsh.name/es6-generators) and one in vanilla ES5. 
 
 ### Okay, so who is this for? Why wouldn't I just use Express or Koa?
 
@@ -132,7 +132,7 @@ after the fact, as well.
 
 Creates a new instance of class `Paquet` with the following available options: 
 
- * `generators: Boolean`, optional. Defaults to false
+ * `generators: Boolean`, optional. Defaults to `false`. When `true`, Paquet will only accept [generator funcitons](https://davidwalsh.name/es6-generators) as middleware and routes.
 
 `.start(options)`
 
