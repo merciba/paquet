@@ -145,9 +145,9 @@ Starts a Paquet API with the following available options:
 
 `options.middleware` object has the following structure: 
 
- ```
+ ```JavaScript
  {
- 	'/:path': String || Array || Function,
+ 	'/:path': (String|Array|Function),
  	...
  }
  ```
@@ -162,10 +162,10 @@ Starts a Paquet API with the following available options:
 
 `options.routes` object has the following structure: 
 
- ```
+ ```JavaScript
  {
  	'(get|post|put|patch|delete)': {
- 		'/:path': Array || Function,
+ 		'/:path': (Array|Function),
  		...
  	},
  	...
