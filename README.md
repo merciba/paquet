@@ -1,6 +1,6 @@
 # Paquet
 
-A highly-modular REST API meta-framework
+A practical REST API framework
 
 [![NPM](https://nodei.co/npm/paquet.png)](https://nodei.co/npm/paquet/)  
 
@@ -9,6 +9,8 @@ A highly-modular REST API meta-framework
 Paquet is a REST API framework with a specific mission: To get a REST API set up as quickly and effortlessly as possible, with a full suite of production-ready features. Paquet was written so that you could use one line and an object structure to spin up a REST API - written entirely in ES6.
 
 Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and [Koa](http://koajs.com/) to give you two basic options - one with generator functions and one in vanilla ES5. 
+
+### Okay, so who is this for? Why wouldn't I just use Express or Koa?
 
 Paquet is not claiming to be something new, it simply makes what's out there more accessible and intuitive to get started with, by unifying their APIs. Instead of worrying about whether you've installed and loaded all the correct middleware, Paquet ships with some basic features out of the box, such as: 
 
