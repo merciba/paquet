@@ -36,7 +36,7 @@ When you create an API using `var paquet = new Paquet(options).start(options)`, 
 npm install --save paquet
 ```
 
-## Gettting Started
+## Examples
 
 ### ES6
 
