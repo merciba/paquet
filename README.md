@@ -60,7 +60,7 @@ npm install paquet --save
 paquet --public ./public --middleware ./middleware.js
 ```
 
-This would start an API called `helloworld` on port 9090 and point the static file server at ./public (relative to your project's root) and load middleware from the file `middleware.js` in your project's root. 
+This would start an API on the default port 3000 and point the static file server at ./public (relative to your project's root) and load middleware from the file `middleware.js` in your project's root. 
 
 To specify `routes`, use a `paquet.json` in your project's root. Here's an [example paquet.json](https://gist.github.com/merciba/f72f7dd0f910e7eb46a21eaf8fed9f32).
 
