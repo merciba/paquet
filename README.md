@@ -10,6 +10,16 @@ Paquet is a REST API framework with a specific mission: To get a REST API set up
 
 Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and [Koa](http://koajs.com/) to give you two basic options - one with [generator functions](https://davidwalsh.name/es6-generators) and one in vanilla ES5. 
 
+ * [Install](#install)
+ * [Examples](#examples)
+  * [ES6](#es6)
+  * [ES5](#es5)
+ * [API](#api)
+  * [Constructor](#constructor)
+  * [Instance Methods](#instance-methods)
+ * [Notes](#notes)
+ * [Contributors](#contributors)
+
 ### Okay, so who is this for? Why wouldn't I just use Express or Koa?
 
 Paquet is for: 
