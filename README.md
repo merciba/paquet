@@ -167,7 +167,6 @@ Starts a Paquet API with the following available options:
  	'(get|post|put|patch|delete)': {
  		'/:path': Array || Function,
  		...
-
  	},
  	...
  }
