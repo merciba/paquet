@@ -93,7 +93,7 @@ paquet.start({
 			'/post/:id': function () {
 				this.response.success({ title: "My post", author: "random guy" })
 			},
-			'/error': function () {
+			'/error': function() {
 				this.response.error(404, "uh oh! an error!")
 			}
 		}
@@ -137,7 +137,6 @@ Starts a Paquet API with the following available options:
  ```
  {
  	'/:path': String || Array || Function,
-
  	...
  }
  ```
@@ -155,13 +154,10 @@ Starts a Paquet API with the following available options:
  ```
  {
  	'(get|post|put|patch|delete)': {
- 		
  		'/:path': Array || Function,
- 		
  		...
 
  	},
-
  	...
  }
  ```
@@ -171,4 +167,4 @@ This project is brand new, so there will inevitably be some bugs. Please file an
 
 ## Contributors
 
-- Alfonso Gober <alfonso@merciba.com>
+- [Alfonso Gober](https://www.linkedin.com/in/alfonsogober)
