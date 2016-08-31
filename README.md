@@ -17,6 +17,7 @@ Paquet is for:
  * front-end developers who want to get started quickly with a basic API to consume
  * anyone who wants to use ES5 and ES6 syntax without switching frameworks
  * human beings just starting out with Node.js who want a more opinionated framework
+ * experienced developers who want object-based mapping between routes and controllers
 
 Paquet is not claiming to be something new, it simply makes what's out there more accessible and intuitive to get started with, by unifying their APIs. Instead of worrying about whether you've installed and loaded all the correct middleware, Paquet ships with some basic features out of the box, such as: 
 
