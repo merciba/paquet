@@ -54,6 +54,21 @@ if (process.env.NODE_ENV === 'development') {
 	} catch (e) {}
 }
 
+function setContext(instance, req, res, next) {
+	instance.request = req;
+	instance.params = req.params;
+	instance.response = res;
+	instance.cookies = {
+		set: function set(name, value, opts) {
+			return req.cookies[name] = value;
+		},
+		get: function get(name) {
+			return req.cookies[name];
+		}
+	};
+	return instance;
+}
+
 var Express = function Express(options) {
 	var instance = {};
 
@@ -87,17 +102,15 @@ var Express = function Express(options) {
 		if (path && typeof middleware === 'string') instance.app.use(path, _express2.default.static(middleware));else if (path && typeof middleware === 'function') instance.app.use(path, middleWareWrapper);else if (middleware[0]) instance.app.use.apply(instance.app, middleWareWrapper);else instance.app.use(middleWareWrapper);
 
 		function middleWareWrapper(request, response, next) {
-			instance.request = request;
-			instance.response = response;
-			instance.params = request.params;
-
-			var m = middleware.apply(instance, [request, response, next]);
+			var ctx = setContext(instance, request, response, next);
+			var m = middleware.apply(ctx, [request, response, next]);
 
 			if (m.then && typeof m.then === 'function') m.then(function (res) {
 				return response.locals = res;
-			});else if (typeof m === 'function') m();else response.locals = m;
-
-			next();
+			});else {
+				if (typeof m === 'function') m();else response.locals = m;
+				next();
+			}
 		}
 	});
 
@@ -108,10 +121,8 @@ var Express = function Express(options) {
 			if (!controllers[0]) controllers = [controllers];
 			instance.app[method].apply(instance.app, [url].concat(controllers.map(function (controller) {
 				return function (req, res, next) {
-					instance.request = req;
-					instance.params = req.params;
-					instance.response = res;
-					controller.apply(instance, [req, res, next]);
+					var ctx = setContext(instance, req, res, next);
+					controller.apply(ctx, [req, res, next]);
 				};
 			})));
 		});

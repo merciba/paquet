@@ -14,6 +14,7 @@ import params from 'koa-strong-params'
 import userAgent from 'koa-useragent'
 import qs from 'koa-qs'
 import mount from 'koa-mount'
+import session from 'koa-session'
 import Promise from 'bluebird'
 
 if (process.env.NODE_ENV === 'development') {
@@ -54,8 +55,14 @@ const Koa = function (options) {
 			this.response.success = (result) => {
 				this.response.status = 200
 				if (!result) result = { message: `${options.name} is up and running :)` }
-				if (typeof result === 'string') this.response.body = result
-				else this.response.body = { status: 200, data: result }
+				if (typeof result === 'string') {
+					this.type = 'text/html'
+					this.response.body = result
+				}
+				else {
+					this.type = 'application/json'
+					this.response.body = { status: 200, data: result }
+				}
 			}
 			this.response.error = (statusCode, err) => {
 				const code = statusCode || 500

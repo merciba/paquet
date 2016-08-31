@@ -8,13 +8,13 @@ A practical REST API framework
 
 Paquet is a REST API framework with a specific mission: To get a REST API set up as quickly and effortlessly as possible, with a full suite of production-ready features. Paquet was written so that you could use one line and an object structure to spin up a REST API - written entirely in ES6.
 
-Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and [Koa](http://koajs.com/) to give you two basic options - one with [generator funcitons](https://davidwalsh.name/es6-generators) and one in vanilla ES5. 
+Under the hood, Paquet is simply leveraging [Express](https://expressjs.com) and [Koa](http://koajs.com/) to give you two basic options - one with [generator functions](https://davidwalsh.name/es6-generators) and one in vanilla ES5. 
 
 ### Okay, so who is this for? Why wouldn't I just use Express or Koa?
 
 Paquet is for: 
 
- * front-end developers who want to get started quickly with a basic API to consume
+ * front-end developers who want to get started quickly with a basic API for their single-page React or Angular app to consume
  * anyone who wants to use ES5 and ES6 syntax without switching frameworks
  * human beings just starting out with Node.js who want a more opinionated framework
  * experienced developers who want object-based mapping between routes and controllers
@@ -57,11 +57,22 @@ paquet.start({
 			'/file/:id': function * () { 
 				this.response.serveFile(`./test/files/${this.params.id}`) 
 			},
-			'/post/:id': function * () {
-				this.response.success({ title: "My post", author: "random guy" })
-			},
+			'/post/:id': [
+				function * (next) {
+					yield next
+				},
+				function * () {
+					this.response.success({ title: "My post", author: "random guy" })
+				}
+			],
 			'/error': function * () {
 				this.response.error(404, "uh oh! an error!")
+			}
+		},
+		post: {
+			'/cookie/:id': function * () {
+				this.cookies.set(this.params.id, 'value')
+				this.response.success({ id: this.params.id })
 			}
 		}
 	}
@@ -101,11 +112,22 @@ paquet.start({
 			'/file/:id': function () { 
 				this.response.serveFile('./test/files/' + this.params.id) 
 			},
-			'/post/:id': function () {
-				this.response.success({ title: "My post", author: "random guy" })
-			},
+			'/post/:id': [
+				function (next) {
+					return next												// You can also call next() or not call it at all, it's all good. 
+				},															// You can even return a promise :)
+				function () {
+					this.response.success({ title: "My post", author: "random guy" })
+				}
+			],
 			'/error': function() {
 				this.response.error(404, "uh oh! an error!")
+			}
+		},
+		post: {
+			'/cookie/:id': function () {
+				this.cookies.set(this.params.id, 'value')
+				this.response.success({ id: this.params.id })
 			}
 		}
 	}
@@ -134,7 +156,7 @@ after the fact, as well.
 
 Creates a new instance of class `Paquet` with the following available options: 
 
- * `generators: Boolean`, optional. Defaults to `false`. When `true`, Paquet will only accept [generator funcitons](https://davidwalsh.name/es6-generators) as middleware and routes.
+ * `generators: Boolean`, optional. Defaults to `false`. When `true`, Paquet will only accept [generator functions](https://davidwalsh.name/es6-generators) as middleware and routes.
 
 ### Instance Methods
 

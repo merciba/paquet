@@ -29,6 +29,12 @@ generatorsAPI.start({
 			'/error': function * () {
 				this.response.error(404, "uh oh! an error!")
 			}
+		},
+		post: {
+			'/cookie/:id': function * () {
+				this.cookies.set(this.params.id, 'value')
+				this.response.success({ id: this.params.id })
+			}
 		}
 	}
 })
@@ -50,6 +56,12 @@ API.start({
 			},
 			'/error': function () {
 				this.response.error(404, "uh oh! an error!")
+			}
+		},
+		post: {
+			'/cookie/:id': function () { 
+				this.cookies.set(this.params.id, 'value')
+				this.response.success({ id: this.params.id })
 			}
 		}
 	}
@@ -84,6 +96,14 @@ describe('Paquet', function() {
 				expect(res[1]).to.equal('{"status":200,"data":{"title":"My post","author":"random guy"}}')
 				done()
 			})
+		})
+
+		it('cookies', function (done) {
+			request({ method: 'POST', uri: 'http://localhost:9090/cookie/test', json: true })
+				.then(function (res) {
+					expect(res.data.id).to.equal('test')
+					done()
+				})
 		})
 
 		it('error', function (done) {
@@ -127,6 +147,14 @@ describe('Paquet', function() {
 			})
 		})
 
+		it('cookies', function (done) {
+			request({ method: 'POST', uri: 'http://localhost:9091/cookie/test', json: true })
+				.then(function (res) {
+					expect(res.data.id).to.equal('test')
+					done()
+				})
+		})
+
 		it('error', function (done) {
 			request('http://localhost:9091/error')
 				.then()
@@ -139,8 +167,5 @@ describe('Paquet', function() {
 		
 	});
 });
-
-
-
 
 

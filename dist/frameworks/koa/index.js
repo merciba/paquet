@@ -53,6 +53,10 @@ var _koaMount = require('koa-mount');
 
 var _koaMount2 = _interopRequireDefault(_koaMount);
 
+var _koaSession = require('koa-session');
+
+var _koaSession2 = _interopRequireDefault(_koaSession);
+
 var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
@@ -110,7 +114,13 @@ var Koa = function Koa(options) {
 						this.response.success = function (result) {
 							_this.response.status = 200;
 							if (!result) result = { message: options.name + ' is up and running :)' };
-							if (typeof result === 'string') _this.response.body = result;else _this.response.body = { status: 200, data: result };
+							if (typeof result === 'string') {
+								_this.type = 'text/html';
+								_this.response.body = result;
+							} else {
+								_this.type = 'application/json';
+								_this.response.body = { status: 200, data: result };
+							}
 						};
 						this.response.error = function (statusCode, err) {
 							var code = statusCode || 500;

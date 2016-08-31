@@ -18,6 +18,17 @@ if (process.env.NODE_ENV === 'development') {
 	} catch (e) {}
 }
 
+function setContext(instance, req, res, next) {
+	instance.request = req
+	instance.params = req.params
+	instance.response = res
+	instance.cookies = {
+		set: (name, value, opts) => req.cookies[name] = value,
+		get: (name) => req.cookies[name]
+	}
+	return instance
+}
+
 const Express = function (options) {
 	const instance = {}
 
@@ -55,17 +66,15 @@ const Express = function (options) {
 		else instance.app.use(middleWareWrapper)
 
 		function middleWareWrapper(request, response, next) { 
-			instance.request = request
-			instance.response = response
-			instance.params = request.params
-
-			let m = middleware.apply(instance, [request, response, next]) 
+			let ctx = setContext(instance, request, response, next)
+			let m = middleware.apply(ctx, [request, response, next]) 
 			
 			if (m.then && (typeof m.then === 'function')) m.then((res) => response.locals = res)
-			else if (typeof m === 'function') m()
-			else response.locals = m
-
-			next()
+			else {
+				if (typeof m === 'function') m()
+				else response.locals = m
+				next()
+			}
 		}
 	})
 
@@ -76,10 +85,8 @@ const Express = function (options) {
 			if (!controllers[0]) controllers = [controllers]
 			instance.app[method].apply(instance.app, [url].concat(controllers.map((controller) => {
 				return function (req, res, next) { 
-					instance.request = req
-					instance.params = req.params
-					instance.response = res
-					controller.apply(instance, [req, res, next]) 
+					let ctx = setContext(instance, req, res, next)
+					controller.apply(ctx, [req, res, next]) 
 				} 
 			})))
 		})

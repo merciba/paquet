@@ -29,6 +29,7 @@
     "koa-send": "^3.2.0",
     "koa-sendfile": "^2.0.0",
     "koa-serve": "^0.1.7",
+    "koa-session": "^3.3.1",
     "koa-static": "^2.0.0",
     "koa-static-folder": "^0.1.6",
     "koa-static-server": "^0.1.8",
