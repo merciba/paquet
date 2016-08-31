@@ -27,6 +27,8 @@ Paquet is not claiming to be something new, it simply makes what's out there mor
 
 Plus, you can still load the Express/Koa middleware you know and love!
 
+When you create an API using `var paquet = new Paquet(options).start(options)`, the underlyng Koa/Express app will always be accessible as `paquet.instance.app`.
+
 ## Install
 
 ```
