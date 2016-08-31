@@ -224,7 +224,7 @@ Starts a Paquet API with the following available options:
  }
  ```
 
-#### .route(routes)
+#### `.route(routes)`
 
 Helper method - behaves identically to `options.routes`, allowing you to add new routes later on in your code.
 
