@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import koa from './frameworks/koa'
 import express from './frameworks/express'
 import _ from 'lodash'
@@ -30,7 +31,7 @@ export class Paquet {
 			_.map(route, (controllers, url) => {
 				if (!controllers[0]) controllers = [controllers]
 				router[method].apply(router, [url].concat(controllers))
-			}) 
-		}) 
+			})
+		})
 	}
 }

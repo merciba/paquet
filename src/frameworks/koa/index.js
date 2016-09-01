@@ -1,7 +1,5 @@
 'use strict'
 
-require('babel-polyfill')
-
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
@@ -34,7 +32,7 @@ function serve(dir) {
 
 const Koa = function (options) {
 	const instance = {};
-	const render = views(options.views || process.cwd(), { 
+	const render = views(options.views || process.cwd(), {
 		map: {
 			html: 'swig'
 		}
@@ -87,11 +85,11 @@ const Koa = function (options) {
 
 		function * middleWareWrapper(next) {
 			let m = yield middleware(next).bind(this)
-			
+
 			if (typeof m === 'function') yield m()
 			else response.locals = m
-			
-			yield next 
+
+			yield next
 		}
 	})
 
@@ -99,14 +97,14 @@ const Koa = function (options) {
 	if (options.public) instance.app.use(serve(options.public))
 
 	if (options.errorHandler) instance.app.on('error', options.errorHandler)
-	if (options.routes) _.map(options.routes, (route, method) => { 
+	if (options.routes) _.map(options.routes, (route, method) => {
 		_.map(route, (controllers, url) => {
 			if (!controllers[0]) controllers = [controllers]
-			instance.router[method].apply(instance.router, [url].concat(controllers)) 
+			instance.router[method].apply(instance.router, [url].concat(controllers))
 		})
 	})
 	else throw new Error("options.routes is not defined.")
-	
+
 	instance.app.listen(options.port);
 
 	console.log(`[${options.name}] listening at port ${options.port}`.green)
