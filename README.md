@@ -76,7 +76,7 @@ paquet.start({
 	port: 9090,																// optional, defaults to 3000
 	name: 'helloworld',														// optional
 	public: './test/public',												// optional, required if no routes set
-  session: {                                    // optional
+    session: {                                    // optional
 		name: 'paquet',
 		keys: ['key1', 'key2']
 	},
@@ -142,7 +142,7 @@ paquet.start({
 	port: 9090,																
 	name: 'helloworld',														
 	public: './test/public',												
-  session: {
+    session: {
 		name: 'paquet',
 		keys: ['key1', 'key2']
 	},
