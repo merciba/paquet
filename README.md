@@ -31,6 +31,7 @@ Paquet is not claiming to be something new, it simply makes what's out there mor
 
  * Body parsing
  * Cookie parsing
+ * Sessions support
  * URL Querystring parsing
  * Serving static files
 
