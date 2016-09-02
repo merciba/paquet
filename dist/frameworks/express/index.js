@@ -41,6 +41,10 @@ var _cookieParser = require('cookie-parser');
 
 var _cookieParser2 = _interopRequireDefault(_cookieParser);
 
+var _cookieSession = require('cookie-session');
+
+var _cookieSession2 = _interopRequireDefault(_cookieSession);
+
 var _morgan = require('morgan');
 
 var _morgan2 = _interopRequireDefault(_morgan);
@@ -54,11 +58,13 @@ if (process.env.NODE_ENV === 'development') {
 	} catch (e) {}
 }
 
-function setContext(instance, req, res, next) {
-	instance.request = req;
-	instance.params = req.params;
-	instance.response = res;
-	instance.cookies = {
+function setContext(ctx, req, res, next) {
+	ctx.request = req;
+	ctx.params = req.params;
+	ctx.path = req.path;
+	ctx.response = res;
+	ctx.state = res.locals;
+	ctx.cookies = {
 		set: function set(name, value, opts) {
 			return req.cookies[name] = value;
 		},
@@ -66,10 +72,13 @@ function setContext(instance, req, res, next) {
 			return req.cookies[name];
 		}
 	};
-	return instance;
+	ctx.session = req.session;
+	return ctx;
 }
 
 var Express = function Express(options) {
+	if (!options.routes && !options.public) throw new Error("Either options.routes or options.public must be defined.");
+
 	var instance = {};
 
 	instance.app = (0, _express2.default)();
@@ -79,6 +88,11 @@ var Express = function Express(options) {
 	instance.app.use(_bodyParser2.default.json());
 	instance.app.use(_bodyParser2.default.urlencoded({ extended: true }));
 	instance.app.use((0, _cookieParser2.default)());
+
+	if (options.session && options.session.name && options.session.keys) {
+		instance.app.set('trust proxy', 1);
+		instance.app.use((0, _cookieSession2.default)(options.session));
+	}
 
 	instance.app.use(function (request, response, next) {
 		response.success = function (result) {
@@ -99,18 +113,27 @@ var Express = function Express(options) {
 	});
 
 	if (options.middleware) _lodash2.default.map(options.middleware, function (middleware, path) {
-		if (path && typeof middleware === 'string') instance.app.use(path, _express2.default.static(middleware));else if (path && typeof middleware === 'function') instance.app.use(path, middleWareWrapper);else if (middleware[0]) instance.app.use.apply(instance.app, middleWareWrapper);else instance.app.use(middleWareWrapper);
+		if (typeof path === 'string' && typeof middleware === 'string') instance.app.use(path, _express2.default.static(middleware));else if (typeof path === 'string' && typeof middleware === 'function') instance.app.use(path, middleWareWrapper(middleware));else if (typeof path === 'string' && middleware[0]) instance.app.use.apply(instance.app, [path].concat(_lodash2.default.map(middleware, function (m) {
+			return middleWareWrapper(m);
+		})));else if (middleware[0]) instance.app.use.apply(instance.app, _lodash2.default.map(middleware, function (m) {
+			return middleWareWrapper(m);
+		}));else instance.app.use(middleWareWrapper(middleware));
 
-		function middleWareWrapper(request, response, next) {
-			var ctx = setContext(instance, request, response, next);
-			var m = middleware.apply(ctx, [request, response, next]);
+		function middleWareWrapper(mw) {
+			return function (request, response, next) {
+				var ctx = setContext(instance, request, response, next);
+				var m = mw.apply(ctx, [request, response, next]);
 
-			if (m.then && typeof m.then === 'function') m.then(function (res) {
-				return response.locals = res;
-			});else {
-				if (typeof m === 'function') m();else response.locals = m;
-				next();
-			}
+				if (m && m.then && typeof m.then === 'function') {
+					m.then(function (res) {
+						response.locals = ctx.state;
+						next();
+					});
+				} else if (m === next) {
+					response.locals = ctx.state;
+					next();
+				} else next();
+			};
 		}
 	});
 

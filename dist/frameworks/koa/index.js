@@ -70,6 +70,21 @@ if (process.env.NODE_ENV === 'development') {
 	} catch (e) {}
 }
 
+function validateMiddleware(arg) {
+	if (typeof arg === 'string') return arg;else if (arg[0]) return _lodash2.default.filter(arg, function (o) {
+		return isGeneratorFunction(o);
+	});else return isGeneratorFunction(arg);
+
+	function isGenerator(obj) {
+		return 'function' == typeof obj.next && 'function' == typeof obj.throw;
+	}
+
+	function isGeneratorFunction(obj) {
+		var c = obj.constructor;
+		if (!c) return false;else if ('GeneratorFunction' === c.name || 'GeneratorFunction' === c.displayName) return obj;else if (isGenerator(c.prototype)) return obj;else return false;
+	}
+}
+
 function serve(dir) {
 	dir = dir.replace('./', process.cwd() + '/');
 	return regeneratorRuntime.mark(function _callee() {
@@ -89,6 +104,8 @@ function serve(dir) {
 }
 
 var Koa = function Koa(options) {
+	if (!options.routes && !options.public) throw new Error("Either options.routes or options.public must be defined.");
+
 	var instance = {};
 	var render = (0, _coViews2.default)(options.views || process.cwd(), {
 		map: {
@@ -101,7 +118,20 @@ var Koa = function Koa(options) {
 
 	(0, _koaQs2.default)(instance.app);
 
-	instance.app.use((0, _koaLogger2.default)()).use((0, _koaBody2.default)()).use((0, _koaStrongParams2.default)()).use((0, _koaUseragent2.default)()).use(regeneratorRuntime.mark(function _callee2(next) {
+	instance.app.use((0, _koaLogger2.default)()).use((0, _koaBody2.default)()).use((0, _koaStrongParams2.default)()).use((0, _koaUseragent2.default)());
+
+	if (options.session && options.session.name && options.session.keys) {
+		(function () {
+			instance.app.keys = options.session.keys;
+			var opts = { key: options.session.name };
+			_lodash2.default.map(options, function (value, key) {
+				return opts[key] = value;
+			});
+			instance.app.use((0, _koaSession2.default)(instance.app, opts));
+		})();
+	}
+
+	instance.app.use(regeneratorRuntime.mark(function _callee2(next) {
 		var _this = this;
 
 		return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -144,48 +174,15 @@ var Koa = function Koa(options) {
 	}));
 
 	if (options.middleware) _lodash2.default.map(options.middleware, function (middleware, path) {
-		var _marked = [middleWareWrapper].map(regeneratorRuntime.mark);
-
-		if (path && typeof middleware === 'string') instance.app.use((0, _koaMount2.default)(path, serve(middleware)));else if (path) instance.app.use((0, _koaMount2.default)(path, middleWareWrapper));else instance.app.use(middleWareWrapper);
-
-		function middleWareWrapper(next) {
-			var m;
-			return regeneratorRuntime.wrap(function middleWareWrapper$(_context3) {
-				while (1) {
-					switch (_context3.prev = _context3.next) {
-						case 0:
-							_context3.next = 2;
-							return middleware(next).bind(this);
-
-						case 2:
-							m = _context3.sent;
-
-							if (!(typeof m === 'function')) {
-								_context3.next = 8;
-								break;
-							}
-
-							_context3.next = 6;
-							return m();
-
-						case 6:
-							_context3.next = 9;
-							break;
-
-						case 8:
-							response.locals = m;
-
-						case 9:
-							_context3.next = 11;
-							return next;
-
-						case 11:
-						case 'end':
-							return _context3.stop();
-					}
-				}
-			}, _marked[0], this);
-		}
+		middleware = validateMiddleware(middleware);
+		if (path === '/*') path = '/';
+		if (middleware) {
+			if (typeof path === 'string' && typeof middleware === 'string') instance.app.use((0, _koaMount2.default)(path, serve(middleware)));else if (typeof path === 'string' && !middleware[0]) instance.app.use((0, _koaMount2.default)(path, middleware));else if (typeof path === 'string' && middleware[0]) _lodash2.default.map(middleware, function (m) {
+				return instance.app.use((0, _koaMount2.default)(path, m));
+			});else if (middleware[0]) _lodash2.default.map(middleware, function (m) {
+				return instance.app.use(m);
+			});else instance.app.use(middleware);
+		} else throw new Error("ES6 mode requires generators as middleware.");
 	});
 
 	instance.app.use(instance.router.routes());
@@ -197,7 +194,7 @@ var Koa = function Koa(options) {
 			if (!controllers[0]) controllers = [controllers];
 			instance.router[method].apply(instance.router, [url].concat(controllers));
 		});
-	});else throw new Error("options.routes is not defined.");
+	});
 
 	instance.app.listen(options.port);
 

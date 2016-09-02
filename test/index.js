@@ -15,17 +15,41 @@ es6.start({
 	port: 9090,
 	name: 'Paquet API (ES6 mode)',
 	public: `./test/public`,
+	session: {
+		name: 'paquet',
+		keys: ['key1', 'key2']
+	},
 	middleware: {
+		'/*': function * (next) {
+		  if (this.path === '/favicon.ico') return;
+
+		  var n = this.session.views || 0;
+		  this.session.views = ++n;
+			yield next
+		},
 		'/docs': `./test/docs`
 	},
 	routes: {
 		get: {
-			'/file/:id': function * () { 
-				this.response.serveFile(`./test/files/${this.params.id}`) 
+			'/sessions/view_count': function * () {
+				this.response.success(this.session.views)
+			},
+			'/file/:id': function * () {
+				this.response.serveFile(`./test/files/${this.params.id}`)
 			},
 			'/post/:id': function * () {
 				this.response.success({ title: "My post", author: "random guy" })
 			},
+			'/array': [
+				function * (next) {
+					this.state.first = true
+					yield next
+				},
+				function * () {
+					this.state.second = true
+					this.response.success({ first: this.state.first, second: this.state.second })
+				}
+			],
 			'/error': function * () {
 				this.response.error(404, "uh oh! an error!")
 			}
@@ -43,23 +67,46 @@ es5.start({
 	port: 9091,
 	name: 'Paquet API (ES5 mode)',
 	public: `./test/public`,
+	session: {
+		name: 'paquet',
+		keys: ['key1', 'key2']
+	},
 	middleware: {
-		'/docs': `./test/docs`
+		'/*': function () {
+		  if (this.path === '/favicon.ico') return;
+
+		  var n = this.session.views || 0;
+		  this.session.views = ++n;
+		},
+		'/docs': './test/docs'
 	},
 	routes: {
 		get: {
-			'/file/:id': function () { 
-				this.response.serveFile(`./test/files/${this.params.id}`) 
+			'/sessions/view_count': function () {
+				this.response.success(this.session.views)
+			},
+			'/file/:id': function () {
+				this.response.serveFile(`./test/files/${this.params.id}`)
 			},
 			'/post/:id': function () {
 				this.response.success({ title: "My post", author: "random guy" })
 			},
+			'/array': [
+				function (req, res, next) {
+					this.state.first = true
+					return next()
+				},
+				function () {
+					this.state.second = true
+					this.response.success({ first: this.state.first, second: this.state.second })
+				}
+			],
 			'/error': function () {
 				this.response.error(404, "uh oh! an error!")
 			}
 		},
 		post: {
-			'/cookie/:id': function () { 
+			'/cookie/:id': function () {
 				this.cookies.set(this.params.id, 'value')
 				this.response.success({ id: this.params.id })
 			}
@@ -68,9 +115,9 @@ es5.start({
 })
 
 describe('Paquet', function() {
-	
+
 	describe('.start({ generators: true })', function() {
-		
+
 		it('public', function (done) {
 			request('http://localhost:9090/')
 				.then(function (res) {
@@ -106,6 +153,14 @@ describe('Paquet', function() {
 				})
 		})
 
+		it('array', function (done) {
+			request('http://localhost:9090/array')
+				.then(function (res) {
+					expect(res).to.equal('{"status":200,"data":{"first":true,"second":true}}')
+					done()
+				})
+		})
+
 		it('error', function (done) {
 			request('http://localhost:9090/error')
 				.then()
@@ -115,11 +170,19 @@ describe('Paquet', function() {
 					done()
 				})
 		})
-		
+
+		it('session', function (done) {
+			request('http://localhost:9090/sessions/view_count')
+				.then(function (res) {
+					expect(res).to.equal('{"status":200,"data":1}')
+					done()
+				})
+		})
+
 	});
 
 	describe('.start()', function() {
-		
+
 		it('public', function (done) {
 			request('http://localhost:9091/')
 				.then(function (res) {
@@ -155,6 +218,14 @@ describe('Paquet', function() {
 				})
 		})
 
+		it('array', function (done) {
+			request('http://localhost:9091/array')
+				.then(function (res) {
+					expect(res).to.equal('{"status":200,"data":{"first":true,"second":true}}')
+					done()
+				})
+		})
+
 		it('error', function (done) {
 			request('http://localhost:9091/error')
 				.then()
@@ -164,8 +235,14 @@ describe('Paquet', function() {
 					done()
 				})
 		})
-		
+
+		it('session', function (done) {
+			request('http://localhost:9091/sessions/view_count')
+				.then(function (res) {
+					expect(res).to.equal('{"status":200,"data":1}')
+					done()
+				})
+		})
+
 	});
 });
-
-

@@ -22,6 +22,24 @@ if (process.env.NODE_ENV === 'development') {
 	} catch (e) {}
 }
 
+function validateMiddleware(arg) {
+	if (typeof arg === 'string') return arg
+	else if (arg[0]) return _.filter(arg, (o) => isGeneratorFunction(o))
+	else return isGeneratorFunction(arg)
+
+	function isGenerator(obj) {
+	  return 'function' == typeof obj.next && 'function' == typeof obj.throw
+	}
+
+	function isGeneratorFunction(obj) {
+	   var c = obj.constructor
+	   if (!c) return false
+	   else if ('GeneratorFunction' === c.name || 'GeneratorFunction' === c.displayName) return obj
+	   else if (isGenerator(c.prototype)) return obj
+		 else return false
+	}
+}
+
 function serve(dir) {
 	dir = dir.replace('./', `${process.cwd()}/`);
 	return function * () {
@@ -31,6 +49,8 @@ function serve(dir) {
 }
 
 const Koa = function (options) {
+	if (!options.routes && !options.public) throw new Error("Either options.routes or options.public must be defined.")
+
 	const instance = {};
 	const render = views(options.views || process.cwd(), {
 		map: {
@@ -41,6 +61,7 @@ const Koa = function (options) {
 	instance.app = koa()
 	instance.router = require('koa-router')()
 
+
 	qs(instance.app)
 
 	instance.app
@@ -48,6 +69,15 @@ const Koa = function (options) {
 		.use(parse())
 		.use(params())
 		.use(userAgent())
+
+	if (options.session && options.session.name && options.session.keys) {
+		instance.app.keys = options.session.keys
+		let opts = { key: options.session.name }
+		_.map(options, (value, key) => opts[key] = value)
+		instance.app.use(session(instance.app, opts))
+	}
+
+	instance.app
 		.use(function * (next) {
 			this.response.render = render
 			this.response.success = (result) => {
@@ -79,18 +109,16 @@ const Koa = function (options) {
 		})
 
 	if (options.middleware) _.map(options.middleware, (middleware, path) => {
-		if (path && (typeof middleware === 'string')) instance.app.use(mount(path, serve(middleware)))
-		else if (path) instance.app.use(mount(path, middleWareWrapper))
-		else instance.app.use(middleWareWrapper)
-
-		function * middleWareWrapper(next) {
-			let m = yield middleware(next).bind(this)
-
-			if (typeof m === 'function') yield m()
-			else response.locals = m
-
-			yield next
+		middleware = validateMiddleware(middleware)
+		if (path === '/*') path = '/'
+		if (middleware) {
+			if ((typeof path === 'string') && (typeof middleware === 'string')) instance.app.use(mount(path, serve(middleware)))
+			else if ((typeof path === 'string') && !middleware[0]) instance.app.use(mount(path, middleware))
+			else if ((typeof path === 'string') && middleware[0]) _.map(middleware, (m) => instance.app.use(mount(path, m)))
+			else if (middleware[0]) _.map(middleware, (m) => instance.app.use(m))
+			else instance.app.use(middleware)
 		}
+		else throw new Error("ES6 mode requires generators as middleware.")
 	})
 
 	instance.app.use(instance.router.routes())
@@ -103,7 +131,6 @@ const Koa = function (options) {
 			instance.router[method].apply(instance.router, [url].concat(controllers))
 		})
 	})
-	else throw new Error("options.routes is not defined.")
 
 	instance.app.listen(options.port);
 
