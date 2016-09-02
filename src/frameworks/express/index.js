@@ -71,6 +71,7 @@ const Express = function (options) {
 	})
 
 	if (options.middleware) _.map(options.middleware, (middleware, path) => {
+		if (path === '/*') path = '*'
 		if ((typeof path === 'string') && (typeof middleware === 'string')) instance.app.use(path, express.static(middleware))
 		else if ((typeof path === 'string') && (typeof middleware === 'function')) instance.app.use(path, middleWareWrapper(middleware))
 		else if ((typeof path === 'string') && middleware[0]) instance.app.use.apply(instance.app, [path].concat(_.map(middleware, (m) => middleWareWrapper(m))))

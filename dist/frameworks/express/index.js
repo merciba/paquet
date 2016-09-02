@@ -113,6 +113,7 @@ var Express = function Express(options) {
 	});
 
 	if (options.middleware) _lodash2.default.map(options.middleware, function (middleware, path) {
+		if (path === '/*') path = '*';
 		if (typeof path === 'string' && typeof middleware === 'string') instance.app.use(path, _express2.default.static(middleware));else if (typeof path === 'string' && typeof middleware === 'function') instance.app.use(path, middleWareWrapper(middleware));else if (typeof path === 'string' && middleware[0]) instance.app.use.apply(instance.app, [path].concat(_lodash2.default.map(middleware, function (m) {
 			return middleWareWrapper(m);
 		})));else if (middleware[0]) instance.app.use.apply(instance.app, _lodash2.default.map(middleware, function (m) {

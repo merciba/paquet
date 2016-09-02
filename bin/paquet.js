@@ -7,7 +7,7 @@ const Paquet = require('../index.js')
 const pkg = require(path.join(__dirname, '../package.json'))
 
 const CLI = function (args) {
-	
+
 	if (args[0] && fs.existsSync(__dirname+"/"+args[0]+".js")) require("./"+args[0]+".js")(instance)
 	else {
 		const instance = {}
@@ -55,7 +55,7 @@ const CLI = function (args) {
 		}
 		else done("Paquet must have, at minimum, either a public folder or routes")
 	}
-	
+
 }
 
 function log(str) {
@@ -63,8 +63,8 @@ function log(str) {
 }
 
 function done(exitmsg) {
-	if (exitmsg) this.log(exitmsg)
+	if (exitmsg) console.log(exitmsg)
 	process.exit(0)
-} 
+}
 
 CLI(process.argv.slice(2, 10))
